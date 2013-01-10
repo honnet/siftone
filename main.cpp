@@ -1,5 +1,5 @@
 /*
- * Sifteo SDK Example.
+ * Siftone, a sifteo-to-phone communication system using sound.
  */
 
 #include <sifteo.h>
@@ -32,20 +32,20 @@ void synthInit()
     sine2Channel.play(sineAsset);
 }
 
-void synthesize(float hz, float volume)
+void synthesize(int f1, int f2)
 {
-    LOG("hz=%f volume=%f\n", hz, volume);
+    LOG("f1=%d, f2=%d\n", f1, f2);
 
-    sine1Channel.setVolume(volume * 96.f);
-    sine2Channel.setVolume(volume * 64.f);
+    sine1Channel.setVolume(AudioChannel::MAX_VOLUME);
+    sine1Channel.setVolume(AudioChannel::MAX_VOLUME);
 
-    sine1Channel.setSpeed(hz * arraysize(sineWave));                // Fundamental
-    sine2Channel.setSpeed(hz * 1.02f * arraysize(sineWave));        // Beat frequency
+    sine1Channel.setSpeed(f1 * arraysize(sineWave));
+    sine2Channel.setSpeed(f2 * arraysize(sineWave));
 }
 
 void main()
 {
-    unsigned fg = BG0ROMDrawable::SOLID_FG ^ BG0ROMDrawable::BLUE;
+    unsigned fg = BG0ROMDrawable::SOLID_FG ^ BG0ROMDrawable::ORANGE;
     unsigned bg = BG0ROMDrawable::SOLID_FG ^ BG0ROMDrawable::BLACK;
 
     vid.initMode(BG0_ROM);
@@ -55,17 +55,14 @@ void main()
 
     synthInit();
 
-    float hz = 0;
+    int f1 = 697;
+    int f2 = 1633;
 
     while (1) {
         // Scale to [-1, 1]
         auto accel = cube.accel() / 128.f;
 
-        // Glide to the target note (half-steps above or below middle C)
-        float note = 261.6f * pow(1.05946f, 8 + round(accel.y * 24.f));
-        hz += (note - hz) * 0.4f;
-
-        synthesize(hz, clamp(accel.x + 0.5f, 0.f, 1.f));
+        synthesize(f1, f2);
 
         const Int2 center = LCD_center - vec(24,24)/2;
         vid.bg0rom.setPanning(-(center + accel.xy() * 60.f));
