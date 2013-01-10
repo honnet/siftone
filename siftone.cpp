@@ -1,4 +1,3 @@
-//#include <ctype.h>
 #include "siftone.h"
 
 // TODO static? const? etc...
@@ -25,7 +24,9 @@ void Siftone::synthesize(int f1, int f2)
 
 void Siftone::sendChar(char c)
 {
-//  c = toupper(c);
+  // to upper :
+  c = (c >= 'a' && c <= 'd')? c-('a'-'A') : c;
+
   for (int y=0; y<4; y++)
     for (int x=0; x<4; x++)
     {
@@ -37,39 +38,51 @@ void Siftone::sendChar(char c)
         return;
       }
     }
+  // unrecognised character, make a silence:
+  synthesize(0, 0);
 }
 
-void Siftone::send(char* s) // const val & adress !
+void Siftone::send(char* s) // const val & address !
 {
   static bool init = true;
-  static SystemTime timer;
-  const float pulseLength = 0.6; // 600ms
+  static bool paused = false;
+  static SystemTime periodTimer, pauseTimer;
+  const float period = 0.3; // seconds
+  const float pulseRatio = 0.8;
   static char* cursor = 0;
 
   if (init)
   {
     init = false;
+    paused = false;
     cursor = s;
     sendChar(*cursor++);
-    timer = TimeDelta(pulseLength) + SystemTime::now();
+    periodTimer = SystemTime::now() + TimeDelta(period);
+    pauseTimer  = SystemTime::now() + TimeDelta(period*pulseRatio);
     return;
   }
 
-  if (*cursor)
+  if (pauseTimer.inPast() && !paused)
   {
-    if (timer.inPast())
+    sendChar(' ');
+    paused = true;
+  }
+
+  if (periodTimer.inPast())
+  {
+    if (*cursor)
     {
       sendChar(*cursor++);
-      timer = TimeDelta(pulseLength) + SystemTime::now();
+      periodTimer = SystemTime::now() + TimeDelta(period);
+      pauseTimer  = SystemTime::now() + TimeDelta(period*pulseRatio);
+      paused = false;
     }
-  }
-  else
-  {
-    init = true;
+    else
+      init = true;
   }
 }
 
-void Siftone::volume(float f)
+void Siftone::volume(float f) // must be in the [0; 1] range
 {
   sineX.setVolume(f * AudioChannel::MAX_VOLUME);
   sineY.setVolume(f * AudioChannel::MAX_VOLUME);

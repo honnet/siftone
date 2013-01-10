@@ -32,7 +32,7 @@ void main()
     // Scale to [-1, 1]
     auto accel = cube.accel() / 128.f;
 
-    char str[] = "0123456789*ABCD#";
+    char str[] = "369 aBc ";
     siftone.send(str);
     siftone.volume(clamp(accel.x + 0.5f, 0.f, 1.f));
 
