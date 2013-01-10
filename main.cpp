@@ -27,15 +27,14 @@ void main()
 
   Siftone siftone;
 
-  int f1 = 697;
-  int f2 = 1633;
-
   while (1)
   {
     // Scale to [-1, 1]
     auto accel = cube.accel() / 128.f;
 
-    siftone.synthesize(f1, f2);
+    char str[] = "0123456789*ABCD#";
+    siftone.send(str);
+    siftone.volume(clamp(accel.x + 0.5f, 0.f, 1.f));
 
     const Int2 center = LCD_center - vec(24,24)/2;
     vid.bg0rom.setPanning(-(center + accel.xy() * 60.f));
