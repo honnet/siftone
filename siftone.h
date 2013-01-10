@@ -18,7 +18,6 @@ static const char asciiCodes[4][4] = { { '1', '2', '3', 'A' },
                                        { '7', '8', '9', 'C' },
                                        { '*', '0', '#', 'D' } };
 /*
-   TODO explain:
 DTMF keypad frequencies:
 
         | 1209 Hz | 1336 Hz | 1477 Hz | 1633 Hz
@@ -30,7 +29,7 @@ DTMF keypad frequencies:
  852 Hz |    7    |    8    |    9    |    C
 ------------------------------------------------
  941 Hz |    *    |    0    |    #    |    D
-
+            'E'                 'F'
  */
 
 class Siftone

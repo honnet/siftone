@@ -1,7 +1,5 @@
 #include "siftone.h"
 
-// TODO static? const? etc...
-
 Siftone::Siftone(int cX, int cY) : sineX(cX), sineY(cY)
 {
   for (int i = 0; i < arraysize(sineWave); i++)
@@ -47,8 +45,8 @@ void Siftone::send(char* s) // const val & address !
   static bool init = true;
   static bool paused = false;
   static SystemTime periodTimer, pauseTimer;
-  const float period = 0.3; // seconds
-  const float pulseRatio = 0.8;
+  const float period = 0.2; // seconds
+  const float pulseRatio = 0.9;
   static char* cursor = 0;
 
   if (init)
