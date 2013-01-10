@@ -84,7 +84,7 @@ void Siftone::send(char* s) // const val & address !
 
 void Siftone::volume(float f) // must be in the [0; 1] range
 {
-  sineX.setVolume(f * AudioChannel::MAX_VOLUME);
-  sineY.setVolume(f * AudioChannel::MAX_VOLUME);
+  sineX.setVolume(f * AudioChannel::MAX_VOLUME/2);
+  sineY.setVolume(f * AudioChannel::MAX_VOLUME/2);
 }
 

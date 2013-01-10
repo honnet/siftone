@@ -32,9 +32,10 @@ void main()
     // Scale to [-1, 1]
     auto accel = cube.accel() / 128.f;
 
-    char str[] = "369 aBc ";
+    char str[] = "0123456789ABCD*# ";
     siftone.send(str);
-    siftone.volume(clamp(accel.x + 0.5f, 0.f, 1.f));
+    float vol = clamp(accel.x + 0.5f, 0.f, 1.f);
+    siftone.volume(vol);
 
     const Int2 center = LCD_center - vec(24,24)/2;
     vid.bg0rom.setPanning(-(center + accel.xy() * 60.f));
