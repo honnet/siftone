@@ -1,18 +1,20 @@
 #include "siftone.h"
 
-Siftone::Siftone(int cX, int cY) : sineX(cX), sineY(cY)
+int Siftone::ID = 0; // static, to construct successive IDs
+
+Siftone::Siftone() : sineX(2*ID), sineY(1 + 2*ID++)
 {
   for (int i = 0; i < arraysize(sineWave); i++)
   {
     float theta = i * float(M_PI * 2 / arraysize(sineWave));
     sineWave[i] = sin(theta) * 0x7fff;
   }
+  sineX.setVolume(AudioChannel::MAX_VOLUME/2);
+  sineY.setVolume(AudioChannel::MAX_VOLUME/2);
 }
 
 void Siftone::synthesize(int f1, int f2)
 {
-//  LOG("f1=%d, f2=%d\n", f1, f2);
-
   sineX.setSpeed(f1 * arraysize(sineWave));
   sineY.setSpeed(f2 * arraysize(sineWave));
 
@@ -31,8 +33,6 @@ void Siftone::sendChar(char c)
       if (c == asciiCodes[y][x])
       {
         synthesize(xFreqs[x], yFreqs[y]);
-        LOG("sending: %c\t(fx=%dHz,\tfy=%dHz)\n",
-                       c, xFreqs[x], yFreqs[y]);
         return;
       }
     }
@@ -40,24 +40,23 @@ void Siftone::sendChar(char c)
   synthesize(0, 0);
 }
 
-void Siftone::send(char* s) // const val & address !
+bool Siftone::send(char* s) // const val & address !
 {
-  static bool init = true;
+  static bool ready = true;
   static bool paused = false;
   static SystemTime periodTimer, pauseTimer;
-  const float period = 0.2; // seconds
-  const float pulseRatio = 0.9;
+  const float period = 0.15; // seconds
+  const float pulseRatio = 0.75;
   static char* cursor = 0;
 
-  if (init)
+  if (ready)
   {
-    init = false;
+    ready = false;
     paused = false;
     cursor = s;
     sendChar(*cursor++);
     periodTimer = SystemTime::now() + TimeDelta(period);
     pauseTimer  = SystemTime::now() + TimeDelta(period*pulseRatio);
-    return;
   }
 
   if (pauseTimer.inPast() && !paused)
@@ -75,9 +74,10 @@ void Siftone::send(char* s) // const val & address !
       pauseTimer  = SystemTime::now() + TimeDelta(period*pulseRatio);
       paused = false;
     }
-    else
-      init = true;
+    else // end of string
+      ready = true;
   }
+  return !ready;
 }
 
 void Siftone::volume(float f) // must be in the [0; 1] range

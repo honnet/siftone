@@ -35,14 +35,15 @@ DTMF keypad frequencies:
 class Siftone
 {
   private:
+    static int ID;
     AudioChannel sineX;
     AudioChannel sineY;
     void synthesize(int f1, int f2);
     void sendChar(char c);
 
   public:
-    Siftone(int cX=6, int cY=7);
-    void send(char* s);
+    Siftone();
+    bool send(char* s);
     void volume(float f);
 };
 
