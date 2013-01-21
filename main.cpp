@@ -67,9 +67,10 @@ class SensorListener
           else
             return;
 
-          char str[] = {tones[prevID], tones[currID], tones[nextID], 0};
-          LOG("sending: %s\n", str);
-          while (siftone.send(str)); // wait while sending
+          char str[] = {tones[prevID], tones[currID], tones[nextID]};
+          LOG("sending: %s (size=%d)\n", str, arraysize(str));
+          siftone.send(str, arraysize(str));
+          while (siftone.update()); // wait while sending
         }
     }
 
@@ -98,7 +99,7 @@ class SensorListener
 
 void main()
 {
-  static SensorListener sensors;
+  SensorListener sensors;
   sensors.install();
   init();
 

@@ -8,9 +8,6 @@
 #include <sifteo.h>
 using namespace Sifteo;
 
-static int16_t sineWave[64] = {0};
-static const AssetAudio sineAsset = AssetAudio::fromPCM(sineWave);
-
 static const int xFreqs[] = { 1209, 1336, 1477, 1633 };
 static const int yFreqs[] = {  697,  770,  852,  941 };
 static const char asciiCodes[4][4] = { { '1', '2', '3', 'A' },
@@ -35,16 +32,27 @@ DTMF keypad frequencies:
 class Siftone
 {
   private:
-    static int ID;
-    AudioChannel sineX;
-    AudioChannel sineY;
-    void synthesize(int f1, int f2);
+    static int16_t sineWave[64];
+    static AssetAudio sineAsset;
+    AudioChannel sineX, sineY;
+    SystemTime periodTimer, pauseTimer;
+    float duration, volume;
+    bool init, paused;
+    unsigned length;
+    char* toSend;
+
+    float setVolume(float vol);
+    void synthesize(int freq1, int freq2);
     void sendChar(char c);
 
   public:
-    Siftone();
-    bool send(char* s);
-    void volume(float f);
+    Siftone(UInt2 channels=vec(0,1), float durationSec=0.15f, float volume=1.f);
+    void send(char* s, unsigned length, float volume=1.f);
+    bool update();      // to run as often as possible
+    // These setters return false if they fail (not modifiable while sending):
+    bool changeVolume(float);
+    bool changeDuration(float);
+    bool changeChannel(UInt2 channels);
 };
 
 #endif // SIFTONE_H
