@@ -1,10 +1,12 @@
 #include "siftone.h"
 
+int16_t Siftone::sineWave[64] = {0};
+AssetAudio Siftone::sineAsset = AssetAudio::fromPCM(sineWave);
+
 Siftone::Siftone(UInt2 chnl, float sec, float vol) :
          sineX(chnl.x), sineY(chnl.y), duration(sec),
          volume(vol), init(true), paused(false)
 {
-  sineAsset = AssetAudio::fromPCM(sineWave);
   for (int i = 0; i < arraysize(sineWave); i++)
   {
     float theta = i * float(M_PI * 2 / arraysize(sineWave));
