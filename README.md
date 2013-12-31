@@ -21,3 +21,5 @@ Enjoy !
 
 *Warning: the iPhone app doesn't work with the default speed, you need a digit period at least twice a long.
 See the variable called "durationSec" here: https://github.com/honnet/siftone/blob/master/siftone.h#L49
+
+PS: a demo is available here: http://youtu.be/jnJJuw-4oGU
